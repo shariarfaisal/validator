@@ -1,43 +1,13 @@
 package validator
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/mail"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 )
-
-type Location struct {
-	City string `json:"city" v:"required;min:3;max:10"`
-	Street string `json:"street" v:"required"`
-	Label string `json:"label" v:"required"`
-}
-
-type User struct {
-	Name string `json:"name" v:"required;min:3;max:10;email"`
-	Phone string `json:"phone"`
-	Age int `json:"age" v:"min:18;max:60"`
-	Address struct {
-		City string `json:"city" v:"required"`
-		Street string `json:"street" v:"required"`
-	} `json:"address" v:"required"`
-	Emails []string `json:"emails" v:"required;min:1;max:3"`
-	Locations []Location `json:"locations" v:"required;min:1;max:3"`
-	Status string `json:"status" v:"required;enum:active,inactive"`
-	CreatedAt string `json:"created_at" v:"required;date"`
-}
-
-func (u *User) FromJSON(r io.Reader) error {
-	return json.NewDecoder(r).Decode(u)
-}
-
-func (u *User) ToJSON(w io.Writer) error {
-	return json.NewEncoder(w).Encode(u)
-}
 
 func isValidDate(date string) bool {
 	_, err := time.Parse("2006-01-02", date)
