@@ -1,5 +1,10 @@
 # Go Struct Validator
 
+### Introduction
+- The purpose of this project is to create error messages that are easy for both users and developers to understand and use. 
+- Our goal is to provide error messages that include the name of the property in response and are simple to use in frontend applications, specifically in forms to display error messages for specific fields. 
+- This will help improve the user experience by making it easier for users to understand and resolve errors that may occur while using the system.
+
 ### Installation
 
 Use go get
@@ -7,7 +12,7 @@ Use go get
 go get -u github.com/shariarfaisal/validator
 ```
 
-Import into your packages
+Import into your project
 ```
 import "github.com/shariarfaisal/validator"
 ```
@@ -114,3 +119,10 @@ func main() {
 
 Email is valid
 ```
+
+### Contributing
+We welcome contributions to this project! If you have an idea for a new feature or have found a bug, please open an issue on GitHub. If you would like to contribute code, please follow these guidelines:
+
+- Fork the repository and create a new branch for your changes.
+- Make your changes, including appropriate tests.
+- Submit a pull request for review.
