@@ -208,10 +208,12 @@ func Validate(s interface{}) (bool, map[string]interface{}) {
 	uv := reflect.ValueOf(s)
 
 	err := validateStruct(ut, uv)
-	
-	if reflect.TypeOf(err).NumField() > 0 {
-		return true, err.(map[string]interface{})
-	} else {
-		return false, nil
+	kind := reflect.TypeOf(err).Kind()
+	if kind == reflect.Map {
+		if len(err.(map[string]interface{})) > 0 {
+			return false, err.(map[string]interface{})
+		}
 	}
+
+	return true, nil
 }
