@@ -224,6 +224,16 @@ func validateField (v reflect.Value, l string) interface{} {
 								return fmt.Sprintf(messages["eq"], value)
 							}
 						}
+					}else if v.Kind() == reflect.String {
+						if vv > 0 {
+							if len(v.String()) != vv{
+								return fmt.Sprintf(messages["eq"], value)
+							} else {
+								if v.String() != value{
+									return fmt.Sprintf(messages["eq"], value)
+								}
+							}
+						}
 					}
 				}
 			case "ne":
@@ -245,6 +255,16 @@ func validateField (v reflect.Value, l string) interface{} {
 						if vv > 0 {
 							if v.Float() == float64(vv){
 								return fmt.Sprintf(messages["ne"], value)
+							}
+						}
+					} else if v.Kind() == reflect.String {
+						if vv > 0 {
+							if len(v.String()) == vv{
+								return fmt.Sprintf(messages["ne"], value)
+							} else {
+								if v.String() == value{
+									return fmt.Sprintf(messages["ne"], value)
+								}
 							}
 						}
 					}
@@ -399,6 +419,9 @@ func validateStruct(ut reflect.Type, uv reflect.Value) interface{} {
 		field := ut.Field(i)
 
 		name := field.Tag.Get("json")
+		if name == "" {
+			name = field.Name
+		}
 		tag := field.Tag.Get("v")
 		v := uv.Field(i)
 
