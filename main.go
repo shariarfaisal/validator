@@ -2,14 +2,17 @@ package validator
 
 import (
 	"fmt"
+	"net"
 	"net/mail"
+	"net/url"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func isValidDate(date string) bool {
+// Date string's validation
+func IsValidDate(date string) bool {
 	_, err := time.Parse("2006-01-02", date)
 	if err == nil {
 		return true
@@ -41,7 +44,52 @@ func isValidDate(date string) bool {
 
 	return false
 }
- 
+
+// Email validation 
+func IsValidEmail(v string) bool {
+	_, err := mail.ParseAddress(v)
+	return err == nil
+}
+
+// URL validation
+func IsValidURL(v string) bool {
+	_, err := url.ParseRequestURI(v)
+	return err == nil
+}
+
+// IP validation
+func IsValidIP(v string) bool {
+	return net.ParseIP(v) != nil
+}
+
+// IPv4 validation
+func IsValidIpV4(v string) bool {
+	ip := net.ParseIP(v)
+	return ip != nil && ip.To4() != nil
+}
+
+
+// Validation messages
+var messages = map[string] string{
+	"required": "This field is required",
+	"email": "This field must be a valid email address",
+	"date": "This field must be a valid date",
+	"min": "This field must be at least %s",
+	"max": "This field must be at most %s",
+	"enum": "This field must be one of the following values: %s",
+	"include": "This field must include one of the following values: %s",
+	"eq": "This field must be equal to %s",
+	"ne": "This field must not be equal to %s",
+	"gt": "This field must be greater than %s",
+	"gte": "This field must be greater than or equal to %s",
+	"lt": "This field must be less than %s",
+	"lte": "This field must be less than or equal to %s",
+	"url": "This field must be a valid URL",
+	"ip": "This field must be a valid IP address",
+	"ipv4": "This field must be a valid IPv4 address",
+}
+
+
 func validateField (v reflect.Value, l string) interface{} {
 	fields := make([]string, 2)
 	keyValue := strings.Split(l, ":")
@@ -60,38 +108,62 @@ func validateField (v reflect.Value, l string) interface{} {
 			case "required":
 				if v.Kind() == reflect.String {
 					if v.String() == "" {
-						return "required"
+						return messages["required"]
 					}
 				}else if v.Kind() == reflect.Int {
 					if v.Int() == 0 {
-						return "required"
+						return messages["required"]
+					}
+				}else if v.Kind() == reflect.Float32 {
+					if v.Float() == 0 {
+						return messages["required"]
+					}
+				} else if v.Kind() == reflect.Float64 {
+					if v.Float() == 0 {
+						return messages["required"]
 					}
 				}else if v.Kind() == reflect.Slice {
-					fmt.Println("Slice")
 					if v.Len() == 0 {
-						return "required"
+						return messages["required"]
 					}
 				}
-
+			case "include": 
+				if v.Kind() == reflect.String {
+					if !strings.Contains(value, v.String()) {
+						return fmt.Sprintf(messages["include"], value)
+					}
+				}
 			case "min":
 				if value != "" {
 					vv, _ := strconv.Atoi(value)
 					if v.Kind() == reflect.String {
 						if vv > 0 {
 							if len(v.String()) < vv{
-								return "min " + value + " characters"
+								return fmt.Sprintf(messages["min"], value)
 							}
 						}
 					}else if v.Kind() == reflect.Int {
 						if vv > 0 {
 							if v.Int() < int64(vv){
-								return "min " + value
+								return fmt.Sprintf(messages["min"], value)
 							}
 						}
-					} else if v.Kind() == reflect.Slice {
+					} else if v.Kind() == reflect.Float32 {
+						if vv > 0 {
+							if v.Float() < float64(vv){
+								return fmt.Sprintf(messages["min"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float64 {
+						if vv > 0 {
+							if v.Float() < float64(vv){
+								return fmt.Sprintf(messages["min"], value)
+							}
+						}
+					}else if v.Kind() == reflect.Slice {
 						if vv > 0 {
 							if v.Len() < vv{
-								return "min " + value
+								return fmt.Sprintf(messages["min"], value)
 							}
 						}
 					}
@@ -102,19 +174,169 @@ func validateField (v reflect.Value, l string) interface{} {
 					if v.Kind() == reflect.String {
 						if vv > 0 {
 							if len(v.String()) > vv{
-								return "max " + value + " characters"
+								return fmt.Sprintf(messages["max"], value)
 							}
 						}
 					}else if v.Kind() == reflect.Int {
 						if vv > 0 {
 							if v.Int() > int64(vv){
-								return "max " + value
+								return fmt.Sprintf(messages["max"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float32 {
+						if vv > 0 {
+							if v.Float() > float64(vv){
+								return fmt.Sprintf(messages["max"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float64 {
+						if vv > 0 {
+							if v.Float() > float64(vv){
+								return fmt.Sprintf(messages["max"], value)
 							}
 						}
 					} else if v.Kind() == reflect.Slice {
 						if vv > 0 {
 							if v.Len() > vv{
-								return "max " + value
+								return fmt.Sprintf(messages["max"], value)
+							}
+						}
+					}
+				}
+			case "eq": 
+				if value != "" {
+					vv, _ := strconv.Atoi(value)
+					if v.Kind() == reflect.Int {
+						if vv > 0 {
+							if v.Int() != int64(vv){
+								return fmt.Sprintf(messages["eq"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float32 {
+						if vv > 0 {
+							if v.Float() != float64(vv){
+								return fmt.Sprintf(messages["eq"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float64 {
+						if vv > 0 {
+							if v.Float() != float64(vv){
+								return fmt.Sprintf(messages["eq"], value)
+							}
+						}
+					}
+				}
+			case "ne":
+				if value != "" {
+					vv, _ := strconv.Atoi(value)
+					if v.Kind() == reflect.Int {
+						if vv > 0 {
+							if v.Int() == int64(vv){
+								return fmt.Sprintf(messages["ne"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float32 {
+						if vv > 0 {
+							if v.Float() == float64(vv){
+								return fmt.Sprintf(messages["ne"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float64 {
+						if vv > 0 {
+							if v.Float() == float64(vv){
+								return fmt.Sprintf(messages["ne"], value)
+							}
+						}
+					}
+				}
+			case "gt":
+				if value != "" {
+					vv, _ := strconv.Atoi(value)
+					if v.Kind() == reflect.Int {
+						if vv > 0 {
+							if v.Int() <= int64(vv){
+								return fmt.Sprintf(messages["gt"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float32 {
+						if vv > 0 {
+							if v.Float() <= float64(vv){
+								return fmt.Sprintf(messages["gt"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float64 {
+						if vv > 0 {
+							if v.Float() <= float64(vv){
+								return fmt.Sprintf(messages["gt"], value)
+							}
+						}
+					}
+				}
+			case "gte":
+				if value != "" {
+					vv, _ := strconv.Atoi(value)
+					if v.Kind() == reflect.Int {
+						if vv > 0 {
+							if v.Int() < int64(vv){
+								return fmt.Sprintf(messages["gte"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float32 {
+						if vv > 0 {
+							if v.Float() < float64(vv){
+								return fmt.Sprintf(messages["gte"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float64 {
+						if vv > 0 {
+							if v.Float() < float64(vv){
+								return fmt.Sprintf(messages["gte"], value)
+							}
+						}
+					}
+				}
+			case "lt":
+				if value != "" {
+					vv, _ := strconv.Atoi(value)
+					if v.Kind() == reflect.Int {
+						if vv > 0 {
+							if v.Int() >= int64(vv){
+								return fmt.Sprintf(messages["lt"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float32 {
+						if vv > 0 {
+							if v.Float() >= float64(vv){
+								return fmt.Sprintf(messages["lt"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float64 {
+						if vv > 0 {
+							if v.Float() >= float64(vv){
+								return fmt.Sprintf(messages["lt"], value)
+							}
+						}
+					}
+				}
+			case "lte":
+				if value != "" {
+					vv, _ := strconv.Atoi(value)
+					if v.Kind() == reflect.Int {
+						if vv > 0 {
+							if v.Int() > int64(vv){
+								return fmt.Sprintf(messages["lte"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float32 {
+						if vv > 0 {
+							if v.Float() > float64(vv){
+								return fmt.Sprintf(messages["lte"], value)
+							}
+						}
+					} else if v.Kind() == reflect.Float64 {
+						if vv > 0 {
+							if v.Float() > float64(vv){
+								return fmt.Sprintf(messages["lte"], value)
 							}
 						}
 					}
@@ -129,22 +351,38 @@ func validateField (v reflect.Value, l string) interface{} {
 									return ""
 								}
 							}
-							return "valid only " + value
+							return fmt.Sprintf(messages["enum"], value)
 						}
 					}
 				}
 			case "email":
 				if v.Kind() == reflect.String {
-					_, err := mail.ParseAddress(v.String())
-					if err != nil {
-						return "invalid email"
+					if !IsValidEmail(v.String()) {
+						return messages["email"]
+					}
+				}
+			case "url":
+				if v.Kind() == reflect.String {
+					if !IsValidURL(v.String()) {
+						return messages["url"]
+					}
+				}
+			case "ip":
+				if v.Kind() == reflect.String {
+					if !IsValidIP(v.String()) {
+						return messages["ip"]
+					}
+				}
+			case "ipv4":
+				if v.Kind() == reflect.String {
+					if !IsValidIpV4(v.String()) {
+						return messages["ipv4"]
 					}
 				}
 			case "date":
 				if v.Kind() == reflect.String {
-					fmt.Println("Date", v.String())
-					if !isValidDate(v.String()) {
-						return "invalid date"
+					if !IsValidDate(v.String()) {
+						return messages["date"]
 					}
 				}
 		}
@@ -175,7 +413,6 @@ func validateStruct(ut reflect.Type, uv reflect.Value) interface{} {
 				}
 			}else if v.Kind() == reflect.Slice {
 				err := validateField(v, l)
-				fmt.Println(name, l)
 				if err != "" {
 					errors[name] = err
 					break
@@ -203,6 +440,9 @@ func validateStruct(ut reflect.Type, uv reflect.Value) interface{} {
 	return errors
 }
 
+// Validate struct fields
+// @param s interface{} struct
+// @return bool, map[string]interface{}
 func Validate(s interface{}) (bool, map[string]interface{}) {
 	ut := reflect.TypeOf(s)
 	uv := reflect.ValueOf(s)
