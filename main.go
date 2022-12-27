@@ -92,7 +92,7 @@ var messages = map[string] string{
 
 func validateField (v reflect.Value, l string) interface{} {
 	fields := make([]string, 2)
-	keyValue := strings.Split(l, ":")
+	keyValue := strings.Split(l, "=")
 
 	if len(keyValue) == 2 {
 		fields[0] = keyValue[0]
