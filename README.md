@@ -67,12 +67,12 @@ type Address struct {
 }
 
 type User struct {
-	Name  string `json:"name" v:"required;min:3;max:20"`
-	Age   int    `json:"age" v:"required;min:18;max:60"`
+	Name  string `json:"name" v:"required;min=3;max=20"`
+	Age   int    `json:"age" v:"required;min=18;max=60"`
 	Email string `json:"email" v:"required;email"`
-	Addresses []Address `json:"addresses" v:"required;min:1;max:3"`
+	Addresses []Address `json:"addresses" v:"required;min=1;max=3"`
 	DateOfBirth string `json:"dateOfBirth" v:"required;date"`
-	Gender string `json:"gender" v:"enum:male,female"`
+	Gender string `json:"gender" v:"enum=male,female"`
 }
 
 func main() {
