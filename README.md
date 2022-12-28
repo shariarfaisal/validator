@@ -1,54 +1,59 @@
 # Go Struct Validator
 
 ### Introduction
-- The purpose of this project is to create error messages with proper structure that are easy for both users and developers to understand and use. 
-- Our goal is to provide error messages that include the name of the property in response and are simple to use in frontend applications, specifically in forms to display error messages for specific fields. 
+
+- The purpose of this project is to create error messages with proper structure that are easy for both users and developers to understand and use.
+- Our goal is to provide error messages that include the name of the property in response and are simple to use in frontend applications, specifically in forms to display error messages for specific fields.
 - This will help improve the user experience by making it easier for users to understand and resolve errors that may occur while using the system.
 
 ### Installation
 
 Use go get
+
 ```
 go get -u github.com/shariarfaisal/validator
 ```
 
 Import into your project
+
 ```
 import "github.com/shariarfaisal/validator"
 ```
 
-### Tags 
+### Tags
 
-|Tag | Description | 
-| - | - |
-| required | Field is not empty or undefined |
-| email | Email validity |
-| date | Date format validity |
-| min | Minimum value for number and minimum length for string value | 
-| max | Maximum value for number and maximum length for string value |
-| enum | Is input data is enum |
-| include | Is data contains or not in between given values | 
-| eq | Is data equal |
-| ne | Is data not eqal |
-| gt | Is data greater than |
-| gte | Is data greater than or equal |
-| lt | Is data less than |
-| lte| Is data less than or equal |
-| url | Is valid url |
-| ip | Is valid ip address |
-| ipv4 | is valid ip address v4 | 
+| Tag        | Description                                                         |
+| ---------- | ------------------------------------------------------------------- |
+| required   | Field is not empty or undefined                                     |
+| email      | Email validity                                                      |
+| date       | Date format validity                                                |
+| min        | Minimum value for number and minimum length for string value        |
+| max        | Maximum value for number and maximum length for string value        |
+| enum       | Is input data is enum                                               |
+| include    | Is data contains or not in between given values                     |
+| eq         | Is data equal                                                       |
+| ne         | Is data not eqal                                                    |
+| gt         | Is data greater than                                                |
+| gte        | Is data greater than or equal                                       |
+| lt         | Is data less than                                                   |
+| lte        | Is data less than or equal                                          |
+| url        | Is valid url                                                        |
+| ip         | Is valid ip address                                                 |
+| ipv4       | is valid ip address v4                                              |
+| item.[tag] | Map & slice items validation (Only for int value and strings types) |
 
-### Functions 
-|Func| Arguments | Description| Return 
-| - | - | - | - |
-| IsValidDate | (***date*** string) | Check date's format validity | bool |
-| IsValidEmail | (***email*** string) | Check email validity | bool |
-| IsValidURL | (***url*** string) | Check url validity | bool |
-| IsValidIP | (***ip*** string) | Check ip address validity | bool |
-| IsValidIpV4 | (***ip*** string) | Check ip address v4 validity | bool |
+### Functions
 
+| Func         | Arguments            | Description                  | Return |
+| ------------ | -------------------- | ---------------------------- | ------ |
+| IsValidDate  | (**_date_** string)  | Check date's format validity | bool   |
+| IsValidEmail | (**_email_** string) | Check email validity         | bool   |
+| IsValidURL   | (**_url_** string)   | Check url validity           | bool   |
+| IsValidIP    | (**_ip_** string)    | Check ip address validity    | bool   |
+| IsValidIpV4  | (**_ip_** string)    | Check ip address v4 validity | bool   |
 
-### Example 
+### Example
+
 ```
 package main
 
@@ -73,6 +78,7 @@ type User struct {
 	Addresses []Address `json:"addresses" v:"required;min=1;max=3"`
 	DateOfBirth string `json:"dateOfBirth" v:"required;date"`
 	Gender string `json:"gender" v:"enum=male,female"`
+	Major []string `json:"major" v:"required;item.enum=Math,Physics,English"`
 }
 
 func main() {
@@ -86,6 +92,7 @@ func main() {
 			},
 		},
 		Gender: "mole",
+		Major: "Math",
 	}
 
 	// Validate the user
@@ -103,7 +110,8 @@ func main() {
 
 ```
 
-### Console Outpur 
+### Console Output
+
 ```
 {
    "addresses":{
@@ -121,6 +129,7 @@ Email is valid
 ```
 
 ### Contributing
+
 We welcome contributions to this project! If you have an idea for a new feature or have found a bug, please open an issue on GitHub. If you would like to contribute code, please follow these guidelines:
 
 - Fork the repository and create a new branch for your changes.
