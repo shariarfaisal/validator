@@ -1,7 +1,7 @@
 # Go Struct Validator
 
 ### Introduction
-- The purpose of this project is to create error messages that are easy for both users and developers to understand and use. 
+- The purpose of this project is to create error messages with proper structure that are easy for both users and developers to understand and use. 
 - Our goal is to provide error messages that include the name of the property in response and are simple to use in frontend applications, specifically in forms to display error messages for specific fields. 
 - This will help improve the user experience by making it easier for users to understand and resolve errors that may occur while using the system.
 
@@ -61,7 +61,7 @@ import (
 )
 
 type Address struct {
-	Label string `json:"label" v:"enum:Home,Office"`
+	Label string `json:"label" v:"enum=Home,Office"`
 	Street string `json:"street" v:"required"`
 	City string `json:"city" v:"required"`
 }
