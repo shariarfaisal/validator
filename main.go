@@ -467,10 +467,15 @@ func validateStruct(uv reflect.Value) (bool, map[string]interface{}) {
 	for i := 0; i < ut.NumField(); i++ {
 		field := ut.Field(i)
 
-		name := field.Tag.Get("json")
+		name := field.Tag.Get("title")
+
 		if name == "" {
-			name = field.Name
-		}
+			name = field.Tag.Get("json")
+			if name == "" {
+				name = field.Name
+			}
+		} 
+		
 		tag := field.Tag.Get("v")
 		v := uv.Field(i)
 
