@@ -467,14 +467,16 @@ func validateStruct(uv reflect.Value) (bool, map[string]interface{}) {
 	for i := 0; i < ut.NumField(); i++ {
 		field := ut.Field(i)
 
-		name := field.Tag.Get("title")
+		title := field.Tag.Get("title")
+		name := field.Tag.Get("json")
 
 		if name == "" {
-			name = field.Tag.Get("json")
-			if name == "" {
-				name = field.Name
-			}
-		} 
+			name = field.Name
+		}
+
+		if title == "" {
+			title = name
+		}
 		
 		tag := field.Tag.Get("v")
 		v := uv.Field(i)
@@ -488,7 +490,7 @@ func validateStruct(uv reflect.Value) (bool, map[string]interface{}) {
 					break
 				}
 			}else if v.Kind() == reflect.Slice {
-				err := validateField(params{v: v, l: l, name: name,},)
+				err := validateField(params{v: v, l: l, name: title,},)
 				if err != "" {
 					errors[name] = err
 					break
@@ -502,7 +504,7 @@ func validateStruct(uv reflect.Value) (bool, map[string]interface{}) {
 							}
 						}else if strings.HasPrefix(l, "item.") {
 							err := validateField(params{
-								v: v.Index(i), l: strings.TrimPrefix(l, "item."), name: name, errPrefix: "Items of ",
+								v: v.Index(i), l: strings.TrimPrefix(l, "item."), name: title, errPrefix: "Items of ",
 							},)
 							if err != "" {
 								errors[name] = err 
@@ -516,7 +518,7 @@ func validateStruct(uv reflect.Value) (bool, map[string]interface{}) {
 					}
 				}
 			}else if v.Kind() == reflect.Map {
-				err := validateField(params{v: v, l: l, name: name,},)
+				err := validateField(params{v: v, l: l, name: title,},)
 				if err != "" {
 					errors[name] = err
 					break
@@ -552,7 +554,7 @@ func validateStruct(uv reflect.Value) (bool, map[string]interface{}) {
 					params{
 						v: v,
 						l: l,
-						name: name,
+						name: title,
 					},
 				)
 				if err != "" {
