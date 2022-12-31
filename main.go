@@ -510,6 +510,10 @@ func validateStruct(uv reflect.Value) (bool, map[string]interface{}) {
 							}
 						}
 					}
+
+					if len(errors[name].(map[int]interface{})) == 0 {
+						delete(errors, name)
+					}
 				}
 			}else if v.Kind() == reflect.Map {
 				err := validateField(params{v: v, l: l, name: name,},)
@@ -537,6 +541,10 @@ func validateStruct(uv reflect.Value) (bool, map[string]interface{}) {
 								errors[name].(map[string]interface{})[strconv.Itoa(int(e.Int()))] = err 
 							}
 						}
+					}
+
+					if len(errors[name].(map[string]interface{})) == 0 {
+						delete(errors, name)
 					}
 				}
 			}else {
