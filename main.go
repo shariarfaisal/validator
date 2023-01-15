@@ -557,31 +557,31 @@ func (f *Field) Validate() string {
 				return err
 			}
 		case "email":
-			if f.Value.Kind() == reflect.String {
+			if f.Value.Kind() == reflect.String && f.Value.String() != "" {
 				if !IsValidEmail(f.Value.String()) {
 					return messages["email"]
 				}
 			}
 		case "url":
-			if f.Value.Kind() == reflect.String {
+			if f.Value.Kind() == reflect.String && f.Value.String() != "" {
 				if !IsValidURL(f.Value.String()) {
 					return messages["url"]
 				}
 			}
 		case "ip":
-			if f.Value.Kind() == reflect.String {
+			if f.Value.Kind() == reflect.String && f.Value.String() != "" {
 				if !IsValidIP(f.Value.String()) {
 					return messages["ip"]
 				}
 			}
 		case "ipv4":
-			if f.Value.Kind() == reflect.String {
+			if f.Value.Kind() == reflect.String && f.Value.String() != "" {
 				if !IsValidIpV4(f.Value.String()) {
 					return messages["ipv4"]
 				}
 			}
 		case "date":
-			if f.Value.Kind() == reflect.String {
+			if f.Value.Kind() == reflect.String && f.Value.String() != "" {
 				if !IsValidDate(f.Value.String()) {
 					return messages["date"]
 				}
