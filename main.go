@@ -479,9 +479,13 @@ func (f *Field) Enum() (err string) {
 			err = errorPrefix + err
 		}
 		if v.Kind() == reflect.String && v.String() != "" {
-			if is := strings.Contains(tagValue, v.String()); !is {
-				return err
+			tags := strings.Split(tagValue, ",")
+			for _, tag := range tags {
+				if tag == v.String() {
+					return ""
+				}
 			}
+			return err
 		}
 	}
 	return ""
